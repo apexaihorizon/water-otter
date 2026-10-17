@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="grid-4">
+    <div class="kpi-card danger">
+        <div class="kpi-label">Minimum Water Access (SQL MIN)</div>
+        <div class="kpi-value">{{ "%.0f"|format(summary.min_water_access or 0) }}%</div>
+        <div class="kpi-meta">Lowest access community (Critical &lt; 50%)</div>
+    </div>
+    <div class="kpi-card success">
+        <div class="kpi-label">Maximum Water Access (SQL MAX)</div>
+        <div class="kpi-value">{{ "%.0f"|format(summary.max_water_access or 0) }}%</div>
+        <div class="kpi-meta">Highest urban core access benchmark</div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-label">Average Water Access (SQL AVG)</div>
+        <div class="kpi-value">{{ "%.2f"|format(summary.avg_water_access or 0) }}%</div>
+        <div class="kpi-meta">Across {{ summary.total_communities }} monitored communities</div>
+    </div>
+    <div class="kpi-card purple">
+        <div class="kpi-label">Average Water Quality Score</div>
+        <div class="kpi-value">{{ "%.2f"|format(summary.avg_water_quality or 0) }}</div>
+        <div class="kpi-meta">Distribution: {{ summary.low_income_communities }} Low | {{ summary.middle_income_communities }} Mid | {{ summary.high_income_communities }} High</div>
+    </div>
+</div>
+
+<div class="grid-2">
+    <!-- Income-wise SQL GROUP BY Analysis Card -->
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <div class="card-title">Income-Wise Inequality Analysis (SQL GROUP BY)</div>
+                <div class="card-subtitle">Grouped count, average clean-water access %, and average water quality score</div>
+            </div>
+            <a href="{{ url_for('sql.workbench', mode='income_group_analysis') }}" class="btn btn-sm btn-outline">Inspect SQL</a>
+        </div>
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Income Category</th>
+                        <th>Community Count</th>
+                        <th>Average Access %</th>
+                        <th>Average Quality</th>
+                        <th>Visual Access Disparity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in income_groups %}
+                    <tr>
+                        <td>
+                            <span class="badge badge-{{ row.income_category|lower }}">{{ row.income_category }}</span>
+                        </td>
+                        <td><strong>{{ row.count }}</strong></td>
+                        <td><strong>{{ "%.2f"|format(row.avg_access_pct) }}%</strong></td>
+                        <td>{{ "%.2f"|format(row.avg_quality) }}</td>
+                        <td style="min-width:140px;">
+                            <div class="bar-track">
+                                <div class="bar-fill" style="width:{{ row.avg_access_pct }}%; background:{% if row.avg_access_pct < 55 %}#dc2626{% elif row.avg_access_pct < 75 %}#d97706{% else %}#16a34a{% endif %};"></div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Poor Water Access Stored Procedure Card -->
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <div class="card-title">Poor Water Access Alert (Stored Procedure &lt; 50%)</div>
+                <div class="card-subtitle">Live output of Stored Procedure <code>CALL GetPoorWaterAccess(50)</code></div>
+            </div>
+            <a href="{{ url_for('sql.workbench', mode='stored_procedure_poor_access') }}" class="btn btn-sm btn-primary">Tune Threshold</a>
+        </div>
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Community</th>
+                        <th>District</th>
+                        <th>Income</th>
+                        <th>Access %</th>
+                        <th>Quality</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in poor_access %}
+                    <tr>
+                        <td>#{{ c.community_id }}</td>
+                        <td><strong>{{ c.community_name }}</strong></td>
+                        <td>{{ c.district }}</td>
+                        <td><span class="badge badge-{{ c.income_category|lower }}">{{ c.income_category }}</span></td>
+                        <td><span class="badge badge-danger">{{ "%.1f"|format(c.clean_water_access) }}%</span></td>
+                        <td>{{ "%.1f"|format(c.water_quality_score) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Complete Water Analysis INNER JOIN Overview -->
+<div class="card">
+    <div class="card-header">
+        <div>
+            <div class="card-title">Community Water Access &amp; Quality Matrix (SQL INNER JOIN)</div>
+            <div class="card-subtitle">Relational join of <code>communities</code> and <code>water_quality</code> across all {{ water_join|length }} communities</div>
+        </div>
+        <div style="display:flex; gap:0.5rem;">
+            <a href="{{ url_for('api.export_query_file', fmt='csv', query_key='water_analysis_join') }}" class="btn btn-sm btn-outline">Export CSV</a>
+            <a href="{{ url_for('api.export_query_file', fmt='json', query_key='water_analysis_join') }}" class="btn btn-sm btn-outline">Export JSON</a>
+            <a href="{{ url_for('sql.crud_manager') }}" class="btn btn-sm btn-primary">+ Manage Records (CRUD)</a>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Community Name</th>
+                    <th>District</th>
+                    <th>Population</th>
+                    <th>Income Category</th>
+                    <th>Clean Water Access (%)</th>
+                    <th>Availability (Hrs/Day)</th>
+                    <th>Distance to Source (km)</th>
+                    <th>Water Quality Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in water_join %}
+                <tr>
+                    <td>{{ r.community_id }}</td>
+                    <td><strong>{{ r.community_name }}</strong></td>
+                    <td>{{ r.district }}</td>
+                    <td>{{ "{:,}".format(r.population) }}</td>
+                    <td><span class="badge badge-{{ r.income_category|lower }}">{{ r.income_category }}</span></td>
+                    <td>
+                        <strong>{{ "%.1f"|format(r.clean_water_access) }}%</strong>
+                        {% if r.clean_water_access < 50 %}<span class="badge badge-danger" style="margin-left:4px;">Poor</span>{% endif %}
+                    </td>
+                    <td>{{ r.availability_hours }} hrs</td>
+                    <td>{{ r.distance_to_source }} km</td>
+                    <td>{{ "%.1f"|format(r.water_quality_score) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Persistent DBMS Audit Log Viewer (Demonstrates Python File Handling) -->
+<div class="card">
+    <div class="card-header">
+        <div>
+            <div class="card-title">Live DBMS Execution &amp; File Audit Log (<code>logs/dbms_audit.log</code>)</div>
+            <div class="card-subtitle">Demonstrates Python File I/O logging of SQL queries, Stored Procedures, and NoSQL pipelines</div>
+        </div>
+    </div>
+    <div class="code-box" style="margin-bottom:0; max-height:190px; overflow-y:auto;">{% for line in recent_logs %}{{ line }}
+{% else %}No audit entries recorded yet.{% endfor %}</div>
+</div>
+{% endblock %}

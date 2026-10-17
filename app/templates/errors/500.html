@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card" style="border-left: 5px solid #dc2626;">
+    <div class="card-title">{{ error_title or '500 - Database / Application Error' }}</div>
+    <p style="margin: 0.75rem 0; color: var(--text-secondary);">{{ error_message }}</p>
+    {% if error_details %}<pre class="code-box">{{ error_details }}</pre>{% endif %}
+    <a href="{{ url_for('dashboard.index') }}" class="btn btn-primary">Return to Dashboard</a>
+</div>
+{% endblock %}

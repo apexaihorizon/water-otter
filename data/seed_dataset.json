@@ -1,0 +1,228 @@
+{
+  "communities": [
+    {
+      "community_id": 1,
+      "community_name": "Community A",
+      "district": "Pune Rural North",
+      "population": 4200,
+      "income_category": "Low"
+    },
+    {
+      "community_id": 2,
+      "community_name": "Community B",
+      "district": "Mulshi West",
+      "population": 5800,
+      "income_category": "Middle"
+    },
+    {
+      "community_id": 3,
+      "community_name": "Community C",
+      "district": "Velhe Valley",
+      "population": 3150,
+      "income_category": "Low"
+    },
+    {
+      "community_id": 4,
+      "community_name": "Community D",
+      "district": "Bhor Central",
+      "population": 6400,
+      "income_category": "Middle"
+    },
+    {
+      "community_id": 5,
+      "community_name": "Community E",
+      "district": "Shirur East",
+      "population": 4900,
+      "income_category": "Low"
+    },
+    {
+      "community_id": 6,
+      "community_name": "Community F",
+      "district": "Maval Corridor",
+      "population": 7200,
+      "income_category": "Middle"
+    },
+    {
+      "community_id": 7,
+      "community_name": "Community G",
+      "district": "Khed South",
+      "population": 5100,
+      "income_category": "Low"
+    },
+    {
+      "community_id": 8,
+      "community_name": "Community H",
+      "district": "Baramati Town",
+      "population": 8900,
+      "income_category": "Middle"
+    },
+    {
+      "community_id": 9,
+      "community_name": "Community I",
+      "district": "Junnar Hills",
+      "population": 4650,
+      "income_category": "Low"
+    },
+    {
+      "community_id": 10,
+      "community_name": "Community J",
+      "district": "Aundh Urban Core",
+      "population": 12500,
+      "income_category": "High"
+    }
+  ],
+  "water_quality": [
+    {
+      "water_id": 101,
+      "community_id": 1,
+      "clean_water_access": 30.0,
+      "availability_hours": 4.0,
+      "distance_to_source": 3.5,
+      "water_quality_score": 55.0
+    },
+    {
+      "water_id": 102,
+      "community_id": 2,
+      "clean_water_access": 45.0,
+      "availability_hours": 8.0,
+      "distance_to_source": 2.1,
+      "water_quality_score": 66.0
+    },
+    {
+      "water_id": 103,
+      "community_id": 3,
+      "clean_water_access": 42.0,
+      "availability_hours": 6.0,
+      "distance_to_source": 2.8,
+      "water_quality_score": 62.0
+    },
+    {
+      "water_id": 104,
+      "community_id": 4,
+      "clean_water_access": 55.0,
+      "availability_hours": 10.0,
+      "distance_to_source": 1.6,
+      "water_quality_score": 72.0
+    },
+    {
+      "water_id": 105,
+      "community_id": 5,
+      "clean_water_access": 48.0,
+      "availability_hours": 7.0,
+      "distance_to_source": 2.4,
+      "water_quality_score": 68.0
+    },
+    {
+      "water_id": 106,
+      "community_id": 6,
+      "clean_water_access": 65.0,
+      "availability_hours": 14.0,
+      "distance_to_source": 1.2,
+      "water_quality_score": 78.0
+    },
+    {
+      "water_id": 107,
+      "community_id": 7,
+      "clean_water_access": 60.0,
+      "availability_hours": 11.0,
+      "distance_to_source": 1.5,
+      "water_quality_score": 74.0
+    },
+    {
+      "water_id": 108,
+      "community_id": 8,
+      "clean_water_access": 75.0,
+      "availability_hours": 18.0,
+      "distance_to_source": 0.8,
+      "water_quality_score": 84.0
+    },
+    {
+      "water_id": 109,
+      "community_id": 9,
+      "clean_water_access": 68.0,
+      "availability_hours": 12.0,
+      "distance_to_source": 1.3,
+      "water_quality_score": 78.0
+    },
+    {
+      "water_id": 110,
+      "community_id": 10,
+      "clean_water_access": 95.0,
+      "availability_hours": 24.0,
+      "distance_to_source": 0.2,
+      "water_quality_score": 96.0
+    }
+  ],
+  "sanitation": [
+    {
+      "sanitation_id": 201,
+      "community_id": 1,
+      "sanitation_coverage": 35.0,
+      "toilet_availability": 40.0,
+      "waste_management_score": 48.0
+    },
+    {
+      "sanitation_id": 202,
+      "community_id": 2,
+      "sanitation_coverage": 52.0,
+      "toilet_availability": 58.0,
+      "waste_management_score": 60.0
+    },
+    {
+      "sanitation_id": 203,
+      "community_id": 3,
+      "sanitation_coverage": 44.0,
+      "toilet_availability": 49.0,
+      "waste_management_score": 54.0
+    },
+    {
+      "sanitation_id": 204,
+      "community_id": 4,
+      "sanitation_coverage": 60.0,
+      "toilet_availability": 65.0,
+      "waste_management_score": 68.0
+    },
+    {
+      "sanitation_id": 205,
+      "community_id": 5,
+      "sanitation_coverage": 50.0,
+      "toilet_availability": 55.0,
+      "waste_management_score": 58.0
+    },
+    {
+      "sanitation_id": 206,
+      "community_id": 6,
+      "sanitation_coverage": 70.0,
+      "toilet_availability": 75.0,
+      "waste_management_score": 74.0
+    },
+    {
+      "sanitation_id": 207,
+      "community_id": 7,
+      "sanitation_coverage": 62.0,
+      "toilet_availability": 68.0,
+      "waste_management_score": 66.0
+    },
+    {
+      "sanitation_id": 208,
+      "community_id": 8,
+      "sanitation_coverage": 80.0,
+      "toilet_availability": 85.0,
+      "waste_management_score": 82.0
+    },
+    {
+      "sanitation_id": 209,
+      "community_id": 9,
+      "sanitation_coverage": 66.0,
+      "toilet_availability": 72.0,
+      "waste_management_score": 70.0
+    },
+    {
+      "sanitation_id": 210,
+      "community_id": 10,
+      "sanitation_coverage": 96.0,
+      "toilet_availability": 98.0,
+      "waste_management_score": 95.0
+    }
+  ]
+}

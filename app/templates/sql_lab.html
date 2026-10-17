@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="grid-sidebar">
+    <!-- Left Sidebar: All Report SQL Operations -->
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <div class="card-title">SQL Operations Menu</div>
+                <div class="card-subtitle">Select an operation from Section 7 &amp; 8 of the ESE Report</div>
+            </div>
+        </div>
+        <ul class="query-menu">
+            <li>
+                <a href="{{ url_for('sql.workbench', mode='view_communities') }}" class="{% if active_mode == 'view_communities' %}active{% endif %}">
+                    1. View Communities
+                    <small>SQL SELECT projection on master table</small>
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('sql.workbench', mode='stored_procedure_poor_access', threshold=threshold) }}" class="{% if active_mode == 'stored_procedure_poor_access' %}active{% endif %}">
+                    2. Poor Water Access (&lt; {{ threshold }}%)
+                    <small>Stored Procedure: CALL GetPoorWaterAccess({{ threshold }})</small>
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('sql.workbench', mode='water_analysis_join') }}" class="{% if active_mode == 'water_analysis_join' %}active{% endif %}">
+                    3. Water Analysis (JOIN)
+                    <small>INNER JOIN communities &amp; water_quality</small>
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('sql.workbench', mode='nested_subquery_below_avg') }}" class="{% if active_mode == 'nested_subquery_below_avg' %}active{% endif %}">
+                    4. Nested Query (&lt; Overall Avg)
+                    <small>Subquery: access &lt; (SELECT AVG(...))</small>
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('sql.workbench', mode='income_group_analysis') }}" class="{% if active_mode == 'income_group_analysis' %}active{% endif %}">
+                    5. Income Analysis (GROUP BY)
+                    <small>Grouped COUNT &amp; AVG by income_category</small>
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('sql.workbench', mode='inequality_summary') }}" class="{% if active_mode == 'inequality_summary' %}active{% endif %}">
+                    6. Inequality Summary
+                    <small>MIN, MAX, AVG &amp; conditional CASE counts</small>
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('sql.workbench', mode='sanitation_analysis') }}" class="{% if active_mode == 'sanitation_analysis' %}active{% endif %}">
+                    7. Sanitation Data
+                    <small>3-Table JOIN with sanitation indicators</small>
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('sql.crud_manager') }}">
+                    8. Temporary Community K CRUD
+                    <small>Interactive INSERT / UPDATE / DELETE lab</small>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Right Main Panel: SQL Query Inspector + Live Result Set -->
+    <div>
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <span class="badge badge-info">{{ query_meta.category }}</span>
+                    <div class="card-title" style="margin-top:4px;">{{ query_meta.title }}</div>
+                    <div class="card-subtitle">{{ query_meta.description }}</div>
+                </div>
+                <div style="display:flex; gap:0.5rem;">
+                    <button type="button" class="btn btn-sm btn-outline" onclick="copyCodeBlock('sqlCodeBlock', this)">Copy SQL</button>
+                    <a href="{{ url_for('api.export_query_file', fmt='csv', query_key=active_mode, threshold=threshold) }}" class="btn btn-sm btn-outline">Download CSV</a>
+                    <a href="{{ url_for('api.export_query_file', fmt='json', query_key=active_mode, threshold=threshold) }}" class="btn btn-sm btn-outline">Download JSON</a>
+                </div>
+            </div>
+
+            {% if active_mode == 'stored_procedure_poor_access' %}
+            <form method="GET" action="{{ url_for('sql.workbench') }}" style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1rem; background:#f8fafc; padding:0.75rem; border-radius:8px; border:1px solid #e2e8f0;">
+                <input type="hidden" name="mode" value="stored_procedure_poor_access">
+                <label for="thresholdInput" style="font-weight:600; font-size:0.85rem;">Stored Procedure Parameter <code>access_threshold</code> (%):</label>
+                <input id="thresholdInput" type="number" name="threshold" value="{{ threshold }}" min="0" max="100" step="1" class="form-control" style="max-width:110px;">
+                <button type="submit" class="btn btn-sm btn-primary">Execute CALL GetPoorWaterAccess({{ threshold }})</button>
+            </form>
+            {% endif %}
+
+            <div id="sqlCodeBlock" class="code-box">{{ query_meta.sql }}</div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.65rem;">
+                <strong>Query Result Set ({{ rows|length }} row{% if rows|length != 1 %}s{% endif %} returned)</strong>
+                <span style="font-size:0.78rem; color:var(--text-muted);">Engine: {{ sql_connection_info }}</span>
+            </div>
+
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            {% for col in columns %}
+                            <th>{{ col|replace('_', ' ')|title }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in rows %}
+                        <tr>
+                            {% for col in columns %}
+                            <td>
+                                {% if col == 'income_category' %}
+                                    <span class="badge badge-{{ row[col]|lower }}">{{ row[col] }}</span>
+                                {% elif col == 'clean_water_access' %}
+                                    <strong>{{ row[col] }}%</strong>
+                                {% else %}
+                                    {{ row[col] }}
+                                {% endif %}
+                            </td>
+                            {% endfor %}
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="{{ columns|length or 1 }}">No matching rows returned for this query parameter.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ app_title }} | DCDS Lab ESE</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header class="top-navbar">
+        <div class="brand-block">
+            <h1>{{ app_title }}</h1>
+            <p>{{ course_info }} &bull; Smit Jayeshkumar Parikh (PRN: 25070126121 | AIML B1)</p>
+        </div>
+        <div class="status-pills">
+            <span class="status-pill" title="Relational Database Engine">
+                <span class="dot {% if sql_backend_mode == 'mysql' %}dot-live{% else %}dot-fallback{% endif %}"></span>
+                SQL: {{ sql_connection_info }}
+            </span>
+            <span class="status-pill" title="NoSQL Document Engine">
+                <span class="dot {% if nosql_backend_mode == 'mongodb' %}dot-live{% else %}dot-fallback{% endif %}"></span>
+                NoSQL: {{ nosql_connection_info }}
+            </span>
+            <form action="{{ url_for('api.reset_databases') }}" method="POST" style="display:inline;">
+                <button type="submit" class="btn btn-sm btn-outline" style="background:rgba(255,255,255,0.14);color:#fff;border-color:rgba(255,255,255,0.3);">
+                    Reset Seed Data
+                </button>
+            </form>
+        </div>
+    </header>
+
+    <nav class="sub-navbar">
+        <ul class="nav-links">
+            <li><a href="{{ url_for('dashboard.index') }}" class="{% if request.endpoint == 'dashboard.index' %}active{% endif %}">1. Executive Dashboard</a></li>
+            <li><a href="{{ url_for('sql.workbench') }}" class="{% if request.endpoint == 'sql.workbench' %}active{% endif %}">2. Advanced SQL Workbench</a></li>
+            <li><a href="{{ url_for('sql.crud_manager') }}" class="{% if 'crud' in (request.endpoint or '') %}active{% endif %}">3. SQL CRUD &amp; Community K Demo</a></li>
+            <li><a href="{{ url_for('nosql.workbench') }}" class="{% if 'nosql' in (request.endpoint or '') %}active{% endif %}">4. MongoDB / NoSQL Lab</a></li>
+            <li><a href="{{ url_for('dashboard.rubric_benchmark') }}" class="{% if request.endpoint == 'dashboard.rubric_benchmark' %}active{% endif %}">5. ESE Rubric Benchmark (10/10)</a></li>
+        </ul>
+        <div style="padding: 0.4rem 0;">
+            <a href="{{ url_for('api.health_check') }}" target="_blank" class="btn btn-sm btn-outline">JSON Health API</a>
+        </div>
+    </nav>
+
+    <main class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-banner flash-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

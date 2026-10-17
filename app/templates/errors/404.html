@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card" style="border-left: 5px solid #d97706;">
+    <div class="card-title">404 - Resource Not Found</div>
+    <p style="margin: 0.75rem 0; color: var(--text-secondary);">The requested page or endpoint could not be found.</p>
+    <a href="{{ url_for('dashboard.index') }}" class="btn btn-primary">Return to Dashboard</a>
+</div>
+{% endblock %}

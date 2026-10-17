@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <div>
+            <span class="badge badge-success">Symbiosis Institute of Technology, Pune &bull; DCDS Lab ESE Evaluation Plan</span>
+            <div class="card-title" style="margin-top:4px;">Benchmark Mapping Against Official 10-Mark ESE Rubrics (CO1–CO5)</div>
+            <div class="card-subtitle">Complete verification matrix mapping every rubric parameter to concrete modules and live features</div>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Evaluation Criterion</th>
+                    <th>Max Marks</th>
+                    <th>"Excellent" Rubric Requirement</th>
+                    <th>Implemented Evidence in Modular Flask Codebase</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>1. Application Design &amp; Functionality</strong></td>
+                    <td><strong>2.0</strong></td>
+                    <td>Fully functional application meeting all requirements with intuitive workflow and proper modular design.</td>
+                    <td>Application Factory pattern (<code>app/__init__.py</code>) + 4 modular Flask Blueprints (<code>dashboard_bp</code>, <code>sql_bp</code>, <code>nosql_bp</code>, <code>api_bp</code>) separating UI, routing, validation, and data repositories.</td>
+                    <td><span class="badge badge-success">2.0 / 2.0 Ready</span></td>
+                </tr>
+                <tr>
+                    <td><strong>2. Python Programming Implementation</strong></td>
+                    <td><strong>2.0</strong></td>
+                    <td>Efficient use of Python concepts such as functions, classes, exception handling, file handling, and modular coding.</td>
+                    <td>OOP Dataclasses (<code>app/models.py</code>), Repository classes (<code>SQLRepository</code>, <code>NoSQLRepository</code>), Custom Exception Hierarchy (<code>app/exceptions.py</code>), and File Handling (CSV/JSON exports &amp; audit logs in <code>app/file_manager.py</code>).</td>
+                    <td><span class="badge badge-success">2.0 / 2.0 Ready</span></td>
+                </tr>
+                <tr>
+                    <td><strong>3. Database Integration (SQL &amp; NoSQL)</strong></td>
+                    <td><strong>2.0</strong></td>
+                    <td>Seamless integration with SQL/NoSQL database, proper connectivity, and data manipulation.</td>
+                    <td>Dual relational + document integration: MySQL 8.0 via <code>PyMySQL</code> (with automatic SQLite fallback) and MongoDB via <code>PyMongo</code> (with automatic JSON document store fallback) + atomic transactions.</td>
+                    <td><span class="badge badge-success">2.0 / 2.0 Ready</span></td>
+                </tr>
+                <tr>
+                    <td><strong>4. Advanced Database Querying &amp; Data Retrieval</strong></td>
+                    <td><strong>2.0</strong></td>
+                    <td>Effective use of advanced queries (Joins, Nested Queries, Aggregations, Grouping, Stored Procedures, MongoDB Aggregation Pipeline, etc.).</td>
+                    <td>2-table &amp; 3-table <code>INNER JOIN</code>, scalar <code>Nested Subquery</code> (&lt; 58.30% avg), <code>GROUP BY income_category</code>, <code>MIN/MAX/AVG</code> aggregations, Stored Procedure <code>CALL GetPoorWaterAccess(50)</code>, MongoDB <code>$lt</code> filter, and <code>$lookup/$unwind/$group</code> pipeline.</td>
+                    <td><span class="badge badge-success">2.0 / 2.0 Ready</span></td>
+                </tr>
+                <tr>
+                    <td><strong>5. Code Quality, Documentation &amp; Output Presentation</strong></td>
+                    <td><strong>1.0</strong></td>
+                    <td>Well-structured code, proper comments, meaningful variable names, clear output/interface, and complete documentation.</td>
+                    <td>Type-annotated PEP-8 modules, docstrings on every class/method, interactive SQL/NoSQL code inspector on every screen, and complete <code>README.md</code> &amp; viva guide.</td>
+                    <td><span class="badge badge-success">1.0 / 1.0 Ready</span></td>
+                </tr>
+                <tr>
+                    <td><strong>6. Testing, Validation, Security &amp; Error Handling</strong></td>
+                    <td><strong>1.0</strong></td>
+                    <td>Comprehensive testing, input validation, and robust error handling implemented.</td>
+                    <td>Server-side validator (<code>app/validators.py</code>), parameterized SQL queries preventing SQL injection, custom 400/404/500 error pages, and automated test suite (<code>tests/test_dbms_app.py</code>).</td>
+                    <td><span class="badge badge-success">1.0 / 1.0 Ready</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="grid-4">
+    <div class="kpi-card danger">
+        <div class="kpi-label">MongoDB $min Access</div>
+        <div class="kpi-value">{{ "%.0f"|format(agg_results.global_summary.min_water_access) }}%</div>
+        <div class="kpi-meta">Pipeline stage: <code>{"$min": "$clean_water_access"}</code></div>
+    </div>
+    <div class="kpi-card success">
+        <div class="kpi-label">MongoDB $max Access</div>
+        <div class="kpi-value">{{ "%.0f"|format(agg_results.global_summary.max_water_access) }}%</div>
+        <div class="kpi-meta">Pipeline stage: <code>{"$max": "$clean_water_access"}</code></div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-label">MongoDB $avg Access</div>
+        <div class="kpi-value">{{ "%.2f"|format(agg_results.global_summary.avg_water_access) }}%</div>
+        <div class="kpi-meta">Pipeline stage: <code>{"$avg": "$clean_water_access"}</code></div>
+    </div>
+    <div class="kpi-card purple">
+        <div class="kpi-label">MongoDB $avg Water Quality</div>
+        <div class="kpi-value">{{ "%.2f"|format(agg_results.global_summary.avg_water_quality) }}</div>
+        <div class="kpi-meta">Across {{ agg_results.global_summary.total_records }} NoSQL documents</div>
+    </div>
+</div>
+
+<!-- 1-Click Automated mongodb_demo.py Runner (Report Section 10) -->
+<div class="card">
+    <div class="card-header">
+        <div>
+            <span class="badge badge-info">Report Section 10 Benchmark (mongodb_demo.py)</span>
+            <div class="card-title" style="margin-top:4px;">Interactive MongoDB CRUD, Filtering &amp; Aggregation Lifecycle</div>
+            <div class="card-subtitle">Executes Create, Read, Update (<code>$set</code>), Delete, Filter (<code>$lt: 50</code>), and Aggregation Pipeline</div>
+        </div>
+        <form action="{{ url_for('nosql.run_demo') }}" method="POST">
+            <button type="submit" class="btn btn-primary">Execute Full MongoDB Demo Lifecycle</button>
+        </form>
+    </div>
+
+    {% if demo_trace %}
+    <div class="grid-2" style="margin-bottom:0.5rem;">
+        {% for item in demo_trace %}
+        <div style="background:#f8fafc; border:1px solid #cbd5e1; border-left:4px solid #7c3aed; border-radius:8px; padding:0.85rem;">
+            <div style="font-weight:700; color:#0f172a;">{{ item.feature }}</div>
+            <div style="font-size:0.82rem; color:#334155; margin:4px 0;">{{ item.result }}</div>
+            <pre style="background:#0f172a; color:#e2e8f0; padding:0.45rem 0.65rem; border-radius:5px; font-size:0.75rem; overflow-x:auto;">{{ item.command }}</pre>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="code-box" style="margin-bottom:0;">{{ pipeline_catalog.mongo_crud_demo.code }}</div>
+    {% endif %}
+</div>
+
+<div class="grid-2">
+    <!-- MongoDB Filtering ($lt) Card -->
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <div class="card-title">MongoDB Query Filter (<code>{"clean_water_access": {"$lt": {{ threshold }}}}</code>)</div>
+                <div class="card-subtitle">Identifies poor water-access communities using NoSQL comparison operators</div>
+            </div>
+            <a href="{{ url_for('api.export_query_file', fmt='json', query_key='mongodb_filtered', threshold=threshold) }}" class="btn btn-sm btn-outline">Export JSON</a>
+        </div>
+        <div class="code-box">{{ pipeline_catalog.mongo_filter_lt_50.code }}</div>
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Community</th>
+                        <th>Income</th>
+                        <th>Access %</th>
+                        <th>Quality Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for d in filtered_docs %}
+                    <tr>
+                        <td>{{ d.community_id }}</td>
+                        <td><strong>{{ d.community_name }}</strong></td>
+                        <td><span class="badge badge-{{ d.income_category|lower }}">{{ d.income_category }}</span></td>
+                        <td><span class="badge badge-danger">{{ d.clean_water_access }}%</span></td>
+                        <td>{{ d.water_quality_score }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- MongoDB Multi-Stage Aggregation Pipeline ($lookup + $unwind + $group) -->
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <div class="card-title">MongoDB Multi-Stage Aggregation Pipeline (<code>$lookup</code> &amp; <code>$group</code>)</div>
+                <div class="card-subtitle">Cross-collection join of <code>communities</code> and <code>water_quality</code> in NoSQL</div>
+            </div>
+            <a href="{{ url_for('api.export_query_file', fmt='json', query_key='mongodb_aggregation') }}" class="btn btn-sm btn-outline">Export JSON</a>
+        </div>
+        <div class="code-box">{{ pipeline_catalog.mongo_income_lookup_pipeline.code }}</div>
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Income Category (<code>_id</code>)</th>
+                        <th>Count (<code>$sum</code>)</th>
+                        <th>Average Access % (<code>$avg</code>)</th>
+                        <th>Average Quality (<code>$avg</code>)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for g in agg_results.income_breakdown %}
+                    <tr>
+                        <td><span class="badge badge-{{ g.income_category|lower }}">{{ g.income_category }}</span></td>
+                        <td><strong>{{ g.count }}</strong></td>
+                        <td><strong>{{ "%.2f"|format(g.avg_access_pct) }}%</strong></td>
+                        <td>{{ "%.2f"|format(g.avg_quality) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
